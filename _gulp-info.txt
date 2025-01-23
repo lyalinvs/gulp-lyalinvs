@@ -1,0 +1,288 @@
+https://www.youtube.com/watch?v=jU88mLuLWlk&t=1437s
+
+1. установить nodejs
+https://nodejs.org/en/download/package-manager
+по инструкции на сайте
+sudo curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+nvm install 22
+
+2. установить git
+https://git-scm.com/downloads/linux
+по иструкции на сайте
+sudo add-apt-repository ppa:git-core/ppa
+sudo apt-get update
+sudo apt-get install git
+
+3. установить npm
+sudo apt-get install npm
+
+в vscode в терминале
+
+4. выбор по умолчанию git
+
+5. для установки package.json
+sudo npm init
+
+package.json
+"type": "module", //переход на модульный тип позволит импортировать пакеты последних версий
+
+6. для установки gulp глобально (устанавливается один раз в систему)
+sudo npm i gulp-cli -g
+
+7. для установки gulp локально
+sudo npm i gulp -D
+
+8. sudo npm i -D del (21мин 30сек) (reset.js)
+sudo npm install del
+https://www.npmjs.com/package/del/v/8.0.0?activeTab=dependencies
+установил
+npm i -D del@6.0.0
+и ошибка ушла
+
+9. для сборки из всех html (с переменными) в один index.html (html.js: import fileinclude from "gulp-file-include";)
+sudo npm i -D gulp-file-include
+
+10.(32мин. 52сек.) плагин для vscode Path Autocomplete
+F1 -> Open Setting.json -> внизу объявлены алиасы
+sudo npm i -D gulp-replace (plugins.js: находить и заменять к примеру алиасы)
+это необходимо к примеру если в нужно добавить картинку на сайт (html, scss)
+url("@img/cover.jpg")
+src="@img/cover.jpg"
+
+11. для преобразования картинок (кроме svg) в формат webp
+sudo npm i -D gulp-webp-html-nosvg (html.js: import webpHtmlNosvg from "gulp-webp-html-nosvg")
+
+12. позволит не кэшировать браузеру готовые файлы проекта
+sudo npm i -D gulp-version-number (html.js: import versionNumber from "gulp-version-number")
+
+13. два плагина для обработки ошибок и показа сообщений (подсказок) если есть ошибка
+sudo npm i -D gulp-plumber gulp-notify (plugins.js: import plumber from "gulp-plumber"; import plumber from "gulp-notify")
+
+14. локальный сервер
+sudo npm i -D browser-sync (plugin.js: import browsersync from "browser-sync")
+
+15. для препроцессора sass
+sudo npm i -D sass gulp-sass (scss.js: import dartSass from 'sass'; import gulpSass from 'gulp-sass')
+для переименовывания файла стилей
+sudo npm i -D gulp-rename (scss.js: import rename from 'gulp-rename')
+сжатие css
+sudo npm i -D gulp-clean-css (scss.js:  import cleanCss from 'gulp-clean-css';)
+вывод WEBP изображений
+sudo npm i -D gulp-webpcss (scss.js: import webpcss from 'gulp-webpcss';)
+смотреть на 59мин. (без него будут ошибки в webpcss)
+sudo npm i -D webp-converter@2.2.3 
+добавление вендорных префиксов
+sudo npm i -D gulp-autoprefixer (scss.js: import autoprefixer from 'gulp-autoprefixer';)
+группировка медиа запросов
+sudo npm i -D gulp-group-css-media-queries (scss.js: import groupCssMediaQueries from 'gulp-group-css-media-queries';)
+
+16. для работы с js
+sudo npm i -D webpack webpack-stream (js.js: import webpack from "webpack-stream")
+
+17. на 1:09:21 (swiper на node.js)
+sudo npm i -D swiper (app.js)
+
+18. для работы с изображениями
+sudo npm i -D gulp-webp gulp-imagemin@7.1.0 (images.js: import webp from "gulp-webp"; import imagemin from "gulp-imagemin")
+для проверки обновления картинки
+sudo npm i -D gulp-newer (plugins.js: import newer from "gulp-newer";)
+
+19. для шрифтов
+sudo npm i -D fs gulp-fonter gulp-ttf2woff2 (fonts.js: import fs from 'fs'; import fonter from 'gulp-fonter'; import tt2woff2 from 'gulp-ttf2woff2')
+ошибка в ttf2woff2, изменил содержимое /node-modules/ttf2woff2/dist/index.js
+
+import { YError, printStackTrace } from 'yerror';
+import debug from 'debug';
+import { env } from 'node:process';
+import bindings from 'bindings'
+import ttf2woff2Loader from '../jssrc/index.js';
+
+const doDebug = debug('ttf2woff2');
+let ttf2woff2 = undefined;
+if (!env.TTF2WOFF2_VERSION ||
+    env.TTF2WOFF2_VERSION?.toLowerCase() === 'native') {
+    try {
+        ttf2woff2 = bindings.default('addon.node').convert;
+        doDebug('✅ Using native version.');
+    }
+    catch (err) {
+        doDebug('❌ Could not load the native version.', printStackTrace(err));
+    }
+}
+if (!env.TTF2WOFF2_VERSION || env.TTF2WOFF2_VERSION?.toLowerCase() === 'wasm') {
+    if (!ttf2woff2) {
+        try {
+            ttf2woff2 = ttf2woff2Loader
+            doDebug('✅ Using WASM version.');
+        }
+        catch (err) {
+            doDebug('❌ Could not load the WASM version.', printStackTrace(err));
+        }
+    }
+}
+if (!ttf2woff2) {
+    throw new YError('E_UNABLE_TO_LOAD_TTF2WOFF2', env.TTF2WOFF2_VERSION);
+}
+export default ttf2woff2;
+
+далее содержимое fonts.js не из "Фрилансер по жизни"
+
+итог: не создаются из *.ttf в *.woff; из *.otf в *.ttf
+браузер не видет *.woff (а его нет)
+
+
+20. для спрайтов svg
+sudo npm i -D gulp-svg-sprite (svgSprive.js: import svgSprite from "gulp-svg-sprite")
+в package.json там где отладка
+  "scripts": {
+    "svgSprive": "gulp svgSprive"
+  },
+запускается в терминале
+npm run svgSprive
+
+1час 30мин
+режим разработчика и режим продакшен я не делал
+
+21. создание zip архива
+sudo npm i -D gulp-zip (zip.js: import zipPlugin from "gulp-zip")
+запустить задачу 
+npm run zip
+
+22. и так для нового проекта, что нужно
+в package.json
+"webp-converter": "2.2.3", (убрал ^)
+"del": "6.0.0", (убрал ^) это значит не будут обновляться
+скопировать в новую папку проекта
+gulp
+src
+gulpfile.js
+package.json
+далее добавить папку в vscode
+запустить терминале
+sudo npm i
+
+23. Итог, что входит в сборку
+1) reset.js "del": "6.0.0" - для удаления папки dist
+2) html.js - сборка html файлов (папка в src), добавляет к файлам css, js версию файла
+3) scss.js - из scss в .css и min.css, добавляет вендорные префиксы, группировка медиа запросов
+4) js.js
+5) image.js - из картинок (кроме svg) в .webp
+6) watcher - отслеживает папку dist
+7) server.js - запускает index.html и следит в реальном времени изминения
+8) zip.js - создаёт архив папки dist
+
+
+
+
+
+
+//// комментарии из видео
+
+Если возникает ошибка: "[HTML] Error: Callback called multiple times"...
+Убедитесь что тег img написан в одну строку, путь к картинке указан без кириллицы и 
+пробелов.
+
+**********************
+
+Для тех у кого не работает плагин del на новой версии, вставляем это в reset: 
+
+import {deleteAsync} from "del"
+export const reset = () => {
+    return deleteAsync(['dist'])
+}
+
+******************
+
+01:22:00 строчка fs.appendFile отображена не полностью. Отображаю:
+fs.appendFile(fontsFile, `@font-face{\n\tfont-family: ${fontName};\n\tfont-display: 
+swap;\n\tsrc: url("../fonts/${fontFileName}.woff2") format("woff2"), 
+url("../fonts/${fontFileName}.woff") format("woff");\n\tfont-weight: 
+${fontWeight};\n\tfont-style: normal;\n}\r\n`, cb);
+
+*********************
+
+Баги:
+53:14 - replace до объединения scss файлов в css. При использовании @img в 
+импортированных файлах в итоговом css @img не заменяется.
+.pipe(app.plugins.replace(/@img\//g, '../img/')) нужно поместить после sass(...)
+01:37:53 - не собирается архив, но при этом нет ошибок. На видео не было показано, 
+как в path.js в path добавляется "buildFolder: buildFolder," из-за чего 
+app.path.buildFolder был равен undefined.
+
+*****************************
+
+После того как выполнили команду npm i и установили последнюю версию пакета del, 
+откатываемся до рабочей версии командой npm install del@6. а затем в файле reset.js 
+удаляем все и пишем 
+
+import del from 'del';
+export const reset = () => {
+  return del(app.path.clean);
+};
+
+*************************************
+
+JS-функция определения поддержки WebP, которая написана в описании, добавляет классы
+к тегу body а не к html как сказано в видео, из-за этого webp картинки не отображались
+при попытке запихнуть их в background... чуть всю сборку не начал переделывать заново
+
+*********************************
+
+У кого будет создаваться околесица из шрифтов после написания: вам нужно установить не
+gulp-fonter, а gulp-fonter-fix, о чем Евгений тактично умолчал
+
+*******************************
+
+У кого проблема с битыми изображениями в папке dist/img в последних версиях галпа,
+добавьте запрет на кодировку в файле images.js,
+строка return app.gulp.src(app.path.src.images, { encoding: false })
+
+также если у вас битые картинки выходят, то мне помогло поменять порядок вызова в
+задаче сначала пайпим imagemin потом webp,  а до этого только webp работали, а обычные
+картинки даже без оптимизации выходи битыми.
+( "gulp": "^5.0.0", "gulp-imagemin": "^9.1.0",  "gulp-webp": "^5.0.0",
+  node-v20.15.1-x64)
+
+*************************************
+
+Если у вас не обновляется страница при изменении SCSS файла, я нашел следующее решение. 
+Нужно удалить плагин browser-sync и установить более старую версию.  
+"npm uninstall browser-sync" и потом "npm i -D browser-sync@2.21.0".
+
+********************************
+
+Если проблеммы с Sass и пишет что то типа "SyntaxError: Cannot use import statement 
+outside a module"(ссылаясь перед этим на sass!) или "SyntaxError: The requested module 
+'sass' does not provide an export named 'default'" , то у меня решилось заменной в файле 
+tasks/scss.js первой строки из " import dartSass from 'sass'" на "import * as dartSass 
+from 'sass';"
+
+**********************************
+
+Если у кого-то не попадают png в проект или они не преобразуются в webp, 
+проверьте чтобы в правиле, где перечисляются расширения картинок 
+ОТСУТСТВОВАЛИ ПРОБЕЛЫ после запятой, иначе, будут скопирован или преобразован 
+ТОЛЬКО ПЕРВЫЙ тип расширения, а остальные будут ПРОИГНОРИРОВАНЫ.
+
+Евгений, заметил такую неточность. Если в проекте есть шрифты в формате woff или woff2 
+(именно они существовали, до преобразования из otf или ttf), то они не попадают в папку 
+dist/fonts, а также не создается с ними файл fonts.scss. На этапе копирования папок, 
+можно задать, чтобы они сразу (woff и woff2) копировались в dist/fonts.
+
+*************************************
+
+Единственное внес 2 небольших изменения (опишу вдруг кому-то тоже так будет удобнее):
+1. По шрифтам: В отдельную команду convertFonts вынес конвертацию шрифтов (OTF -> TTF; 
+TTF -> WOFF и WOFF2) с записью получившихся WOFF и WOFF2 в папку src/fonts и создание 
+файла src/scss/font.scss. А в основную сборку добавил копирование файлов WOFF и WOFF2 в 
+папку dist/fonts. 
+2. В архив решил записывать все содержимое папки проекта (разумеется без модулей и папки 
+dist) и сохранять его в папке dist/archive. После переноса всего содержимого папки dist 
+на сервер, на сервере сохранится и архив проекта. А значит чтобы не случилось, я как 
+разработчик всегда смогу его от туда достать, развернуть у себя на компе и внести 
+необходимые доработки.
+
+********************************
+
+
+

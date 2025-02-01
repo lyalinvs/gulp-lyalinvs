@@ -1,0 +1,24 @@
+/*оболочка*/
+.wrapper{
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+/*прижать footer вниз*/
+.wrapper{
+	> main{
+		flex: 1 1 auto;
+	}
+}
+/*ограничивающий контейнер*/
+/*
+Стили будут применяться ко всем классам содержащим *__container
+Например headere__container, main__container и т.д.
+*/
+[class*="__container"]{
+	margin: 0 auto;
+	padding: 0 rem($containerPadding); /* отступы безопасности */
+    max-width: rem($maxWidthContainer);
+    box-sizing: content-box;
+}

@@ -1,0 +1,64 @@
+/*
+.header{
+	&__container{
+	
+	}
+}
+*/
+
+// Burger
+/*
+.icon-menu{
+	display: none;
+	@media #{$large-mobile} {
+		display: block;
+		position: relative;
+		//т.к. бургер это flex элемент, то надо указывать ширину так, а не через width и тогда бургер при уменьшении экрана не будет сужаться
+		flex: 0 0 30px; 
+		//width: 30px;
+		height: 18px;
+		cursor: pointer;
+		z-index: 5;
+		span,
+		&::before,
+		&::after{
+			content: "";
+			transition:  all .3s ease 0s;
+			left: 0;
+			position: absolute;
+			width: 100%;
+			height: 2px;
+			background-color: #fff;
+		}
+		&::before{
+			top: 0;
+		}
+		&::after{
+			bottom: 0px;
+		}
+		span{
+			top: calc(50% - 1px);
+		}
+		&.menu-open{//из бургера делается крестик
+			span{
+				transform: scale(0);
+			}
+			&::before{
+				transform: rotate(-45deg);
+				top: calc(50% - 1px);
+			}
+			&::after{
+				transform: rotate(45deg);
+				bottom: calc(50% - 1px);
+			}
+		}
+		&:hover{
+			span,
+			&::before,
+			&::after{
+				background-color: #942424;
+			}
+		}
+	}
+}
+*/

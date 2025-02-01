@@ -1,0 +1,64 @@
+@media #{$small-device}{ 
+// only screen and (max-width: 478.98px)
+}
+
+@media #{$large-mobile}{ 
+// only screen and (max-width: 766.98px)
+/*
+	body{
+		&.lock{
+			overflow: hidden;
+		}
+	}
+	.top-header__container{
+		position: relative;
+	}
+	.top-header{
+		padding: 0;
+	}
+	.menu{
+		position: absolute;
+		top: rem(50);
+		left: -100%;
+		width: 100%;
+		height: 100vh;
+		overflow: auto; //если в меню (к примеру) пунктов больше, чтобы можно доскроллить до последнего пункта (ведь у body скролл скрыт)
+		background-color: #ccc999;
+		transition: all .3s ease 0s;
+		&__link{
+			color: $colorFont;
+		}
+		&__list{
+			flex-direction: column;
+		}
+		&.menu-open{
+			left: 0;
+		}
+	}
+	.icon-menu{
+		margin-left: auto; // прижать бургер вправо
+	}
+	.page{
+		&__content{
+			margin-top: rem(60);
+			font-size: rem(14);
+		}
+	}
+*/	
+}
+
+@media #{$tablet-device}{ 
+// only screen and (min-width: 767.98px) and (max-width: 990.98px)
+}
+
+@media #{$desktop-device}{ 
+// only screen and (min-width: 991.98px) and (max-width: 1198.98px)
+}
+
+@media #{$laptop-device}{ 
+// only screen and (min-width: 1199.98px) and (max-width: 1598.98px)
+}
+
+@media #{$extrabig-device}{
+// only screen and (min-width: 1599.98px)
+}

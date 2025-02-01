@@ -1,0 +1,187 @@
+// https://habr.com/ru/articles/646089/
+@use "sass:math";
+//  Вспомогательная функция для миксина adaptiveValueModified
+@function defineLineParameters($breakPoints, $i) {
+	// Определяет параметры линии, заданной парой точек {x1, y1} и {x2, y2}
+	// Точки берутся из списка $breakPoints, который имеет вид (x1, y1, x2, y2, ..., xN, yN)
+	// Индекс $i задает выбор начальной точки  - $x1
+	// Результат - список параметров (наклон, точка пересечения оси Y, формула прямой)
+ 
+	$x1: nth($breakPoints, 2 * $i - 1);
+	$x2: nth($breakPoints, 2 * $i + 1);
+	$y1: nth($breakPoints, 2 * $i);
+	$y2: nth($breakPoints, 2 * ($i + 1));
+ 
+	$slope: ($y2 - $y1) / ($x2 - $x1);
+	$yIntersection: -($x1 * $slope) + $y1;
+ 
+	$flyValue: 0; // Оптимизация $flyValue - избавление от члена вида 0 * vw
+	@if ($slope == 0) {
+	   $flyValue: #{rem($yIntersection)};
+	} @else {
+	   @if ($yIntersection != 0) {
+		  //$flyValue: #{rem($yIntersection)} + #{$slope * 100}vw;
+		  $flyValue: #{rem($yIntersection)}" + " #{$slope * 100}vw;
+	   } @else {
+		  $flyValue: #{$slope * 100}vw;
+	   }
+	}
+	$lineParameters: ();
+	$lineParameters: append($lineParameters, $slope);
+	$lineParameters: append($lineParameters, $yIntersection);
+	$lineParameters: append($lineParameters, $flyValue);
+	@return $lineParameters;
+ }
+ 
+ @function rem($px) {
+	$result: $px / 16 + rem;
+	@return $result;
+ }
+ 
+	// Миксин, основной блок
+ @mixin adaptiveValueModified($property, $breakPoints...) {
+	// Миксин, который воспроизводит произвольное заданное пользователем поведение (изменение) значения свойства.
+	//
+	// Поведение задается (табулируется) контрольными точками ($breakpoints).
+	// Вывод в CSS -- в относительных единицах rem.
+	//
+	// Параметры:
+	// $property - свойство, которое нужно адаптировать ("font-size", "margin-top", "padding", ...)
+	//
+	// $breakPoints -- список точек определяющих поведение свойства $property в формате
+	//    $значениеШириныВьюпорта1, $значениеСвойства1, ..., $значениеШириныВьюпортаN, $значениеСвойстваN.
+	//    Величины задаются в пикселях без указания единицы измерения.
+	//    $значениеШириныВьюпорта задаются строго в возрастающем порядке (положительные числа),
+	//    равных значений быть не должно:
+	//    $значениеШириныВьюпорта1 < $значениеШириныВьюпорта2 < ... < $значениеШириныВьюпортаN
+	//    Ограничений на $значениеСвойства нет -- любое положительное или отрицательное число, и ноль.
+	//
+	// Примеры:
+	//    adaptiveValueModified("font-size", 320, 20, 900, 30, 1600, 40) --
+	//    на 320px значение "font-size" равно 20px, на 900px - увеличивается до 30px, на 1600px - до 40px,
+	//    больше 1600px - продолжает расти (как и на участке от 900 до 1600px), меньше 320px -- продолжает падать
+	//    (как и на участке от 900 до 320px).
+	//
+	//    adaptiveValueModified("margin-top", 320, 5, 991, 5, 992, 20, 1600, 40, 1700, 40) --
+	//    на 320px значение "margin-top" равно 5px, до 991px - остается равным 5px, при 992px - скачкообразно возрастает
+	//    до 20px, на 1600px - увеличивается до 40px, больше 1600px - остается постоянным и равно 40px.
+	//
+	//    Если ширина вьюпорта меньше, чем $значениеШириныВьюпорта1, то поведение свойства аппроксимируется
+	//    линией с отрезка [$значениеШириныВьюпорта1, $значениеШириныВьюпорта2]; если больше, чем $значениеШириныВьюпортаN,
+	//    то линией с отрезка [$значениеШириныВьюпорта(N-1), $значениеШириныВьюпортаN].
+ 
+	$breakPointsLength: length($breakPoints); // Длина аргумента $breakPoints (должна быть парным числом)
+	$breakPointsPair: $breakPointsLength / 2; // Количество точек, задающих поведение свойства $property
+	$breakPointsEven: $breakPointsPair - round($breakPointsPair);
+	@if ($breakPointsEven != 0) {
+	   // Проверка на парность длины аргумента $breakPoints
+	   @error "Список параметров слишком краток -- возможно задано непарное количество точек.";
+	}
+	@if ($breakPointsLength < 4) {
+	   // Проверяем, чтоб имелось минимальное количество аргументов при вызове миксина. Если нет --
+	   // выводим ошибку
+	   @error "Список параметров слишком краток, не хватает точек для определения поведения свойства!";
+	} @else {
+	   @if ($breakPointsPair == 2) {
+		  // Если заданы только две пары точек - моментальный вывод в CSS
+		  $slope: (nth($breakPoints, 4) - nth($breakPoints, 2)) / (nth($breakPoints, 3) - nth($breakPoints, 1));
+		  $yIntersection: -(nth($breakPoints, 1) * $slope) + nth($breakPoints, 2);
+		  $flyValue: #{rem($yIntersection)} + " " + "+" + " " + #{$slope * 100}vw;
+		  // ! изначально было так, $flyValue: #{rem($yIntersection)} + #{$slope * 100}vw; 
+
+		  $propertyValue: "";
+		  @if ($slope == 0) {
+			 $propertyValue: rem($yIntersection);
+		  } @else {
+			 @if ($yIntersection == 0) {
+				$propertyValue: #{$slope * 100}vw;
+			 } @else {
+				$propertyValue: #{"calc(" + $flyValue + ")"};
+			 }
+		  }
+		  #{$property}: $propertyValue;
+	   } @else if ($breakPointsPair == 3) {
+		  // Если заданы только три пары точек - оптимизируем результат, вывод в CSS
+		  $slopeList: ();
+		  $flyValueList: ();
+ 
+		  @for $i from 1 through 2 {
+			 $lineParameters: defineLineParameters($breakPoints, $i);
+			 $slope: nth($lineParameters, 1);
+			 $yIntersectionList: nth($lineParameters, 2);
+			 $flyValue: nth($lineParameters, 3);
+			 $slopeList: append($slopeList, $slope);
+			 $flyValueList: append($flyValueList, $flyValue);
+		  }
+ 
+		  $propertyValue: #{nth($flyValueList, 1)};
+		  @if (nth($slopeList, 2) > nth($slopeList, 1)) {
+			 $propertyValue: #{"max(" + $propertyValue + ", " + nth($flyValueList, 2) + ")"};
+		  } @else {
+			 $propertyValue: #{"min(" + $propertyValue + ", " + nth($flyValueList, 2) + ")"};
+		  }
+		  #{$property}: $propertyValue;
+	   } @else {
+		  // Количество пар данных больше трех
+ 
+		  // Вычисление константы
+		  $cumul: 0;
+		  @for $i from 2 through ($breakPointsPair - 1) {
+			 $cumul: $cumul + nth($breakPoints, 2 * $i);
+		  }
+ 
+		  // Основной блок
+		  $propertyValue: "";
+		  $propertyValueList: ();
+		  @for $i from 1 through ($breakPointsPair - 1) {
+			 $lineParameters: defineLineParameters($breakPoints, $i);
+			 $y1: nth($breakPoints, 2 * $i);
+			 $y2: nth($breakPoints, 2 * ($i + 1));
+			 $slope: nth($lineParameters, 1);
+			 $yIntersection: nth($lineParameters, 2);
+			 $flyValue: nth($lineParameters, 3);
+ 
+			 @if ($slope == 0) {
+				// Значение свойства НЕ изменяется на участке $x1, $x2
+				$cumul: $cumul - $yIntersection;
+			 } @else {
+				// Значение свойства изменяется на участке $x1, $x2
+				@if ($i == 1) {
+				   // Обработка первой записи в результат
+				   @if ($slope > 0) {
+					  $propertyValue: #{"min(" + rem($y2) + ", " + $flyValue + ")"};
+				   } @else {
+					  $propertyValue: #{"max(" + rem($y2) + ", " + $flyValue + ")"};
+				   }
+				   $propertyValueList: append($propertyValueList, $propertyValue);
+				} @else if ($i == ($breakPointsPair - 1)) {
+				   // Обработка последней записи в результат
+				   @if ($slope > 0) {
+					  $propertyValue: #{"max(" + rem($y1) + ", " + $flyValue + ")"};
+				   } @else {
+					  $propertyValue: #{"min(" + rem($y1) + ", " + $flyValue + ")"};
+				   }
+				   $propertyValueList: append($propertyValueList, $propertyValue);
+				} @else {
+				   // Последующие записи в результат
+				   $propertyValue: #{"clamp(" + rem(min($y1, $y2)) + ", " + $flyValue + ", " + rem(max($y1, $y2)) + ")"};
+				   $propertyValueList: append($propertyValueList, " + " $propertyValue);
+				}
+			 }
+		  }
+		  // Формирование результата работы
+		  $propertyValue: nth($propertyValueList, 1);
+		  @if (length($propertyValueList) != 1) {
+			 @for $i from 2 through length($propertyValueList) {
+				$propertyValue: #{$propertyValue + ' + ' + nth($propertyValueList, $i)};
+			 }
+		  }
+		  @if ($cumul > 0) {
+			 $propertyValue: #{'calc(' + $propertyValue + ' - ' + rem(max($cumul, -$cumul)) + ')'};
+		  } @else if($cumul < 0) {
+			 $propertyValue: #{'calc(' + $propertyValue + ' + ' + rem(max($cumul, -$cumul)) + ')'};
+		  }
+		  #{$property}: $propertyValue;
+	   }
+	}
+ }

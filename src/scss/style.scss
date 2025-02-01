@@ -1,41 +1,65 @@
-@import url('https://fonts.googleapis.com/css?family=Montserrat:300,regular,500,600,700&display=swap');
-@import "./reset/reset";
-:root{
-    --maxWidthContainer: 1024px; /*максимальная ширина контейнера*/
-}
+@use "sass:math";
+// Обнуление стилей
+@import "./reset/_reset";
 
-html,
-body{
-    height: 100%;
-}
-body{
-    font-family: "Montserrat", sans-serif;
-    font-size: 16px;
-    line-height: 1.5;
-    color: #212529;
-    background-color: #f8f9fa;
-}
-/*оболочка*/
-.wrapper{
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    overflow: hidden;
-}
-/*прижать footer вниз*/
-.wrapper{
- 	> main{
-    	flex: 1 1 auto;
- 	}
-}
-[class*="__container"]{
-	margin: 0 auto;
-	padding-left: 15px; /*отступы безопасности*/
-	padding-right: 15px; /*отступы безопасности*/
-    max-width: var(--maxWidthContainer);
-    box-sizing: content-box;
-}
+// Импорт google шрифтов
+@import "./app/_fontsimport";
+
+// импорт функций
+/* 
+смотреть инструкцию в файле
+scss/functions/_rem.scss
+*/
+@import "./functions/_rem";
+/* 
+смотреть инструкцию в файле
+scss/functions/_adaptiveValues.scss
+*/
+@import "./functions/_adaptiveValues";
+
+// Шрифт по умолчанию
+$fontFamily: "Montserrat";
+$fontSize: rem(15); //rem - это функция переводит из px в rem
+
+// Основные цвета
+$colorFont: #212529; // Цвет шрифта по умолчанию
+$colorBg: #f8f9fa; // Цвет background по умолчанию
+
+// Минимальная ширина страницы
+$minWidth: 320;
+// Ширина полотна (макета)
+$maxWidth: 1920;
+// Ширина ограничивающего контейнера (0 - нет ограничений)
+$maxWidthContainer: 1024;
+// Общий отступ у контейнера (отступ безопасности)
+// (30 = 15px слева и справа, 0 - нет ограничений)
+$containerPadding: 30;
+// Ширина срабатывания первого брейкпоинта
+//$containerWidth: $maxWidthContainer + $containerPadding;
+
+// Переменные брейкпоинтов
+$extrabig-device: 'only screen and (min-width: 1599.98px)';
+$laptop-device: 'only screen and (min-width: 1199.98px) and (max-width: 1598.98px)';
+$desktop-device: 'only screen and (min-width: 991.98px) and (max-width: 1198.98px)';
+$tablet-device: 'only screen and (min-width: 767.98px) and (max-width: 990.98px)';
+$large-mobile: 'only screen and (max-width: 766.98px)';
+$small-device: 'only screen and (max-width: 478.98px)';
 
 
+// Подключение базовых стилей, шаблонов, вспомогательные классы
+@import "./app/_base";
 
-@import "./components/footer";
+// Подключение стилей общих элементов проекта
+@import "./app/_common";
+
+// Подключение стилей отдельных блоков
+// header
+@import "./app/_header";
+// Подключение основного блока
+// main
+@import "./app/_main";
+// footer
+@import "./app/_footer";
+
+// Подключение брейкпоинтов
+@import "./app/_breakpoint";
